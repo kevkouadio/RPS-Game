@@ -17,6 +17,7 @@ const game = () => {
     const computerDisplay = document.getElementById('computer-choice');
     const playerDisplay = document.getElementById('player-choice');
     const roundResult = document.querySelector('.round-result');
+    const resultSlot = document.querySelector('.result-slot');
     const playerScoreBoard = document.querySelector('.p-count');
     const computerScoreBoard = document.querySelector('.c-count');
     const movesLeft = document.querySelector('.movesleft');
@@ -101,6 +102,7 @@ const game = () => {
 
     const showRoundResult = (outcome) => {
         roundResult.hidden = false;
+        resultSlot.classList.add('result-slot--active');
         roundResult.classList.remove('game-over', 'game-over-win', 'game-over-loss', 'game-over-tie');
 
         if (outcome === 'tie') {
@@ -156,6 +158,7 @@ const game = () => {
         document.querySelector('.rounds-track').hidden = true;
 
         roundResult.hidden = false;
+        resultSlot.classList.add('result-slot--active');
         roundResult.classList.add('game-over');
 
         if (playerScore > computerScore) {
@@ -179,6 +182,7 @@ const game = () => {
 
     playButton.addEventListener('click', () => {
         roundResult.hidden = true;
+        resultSlot.classList.remove('result-slot--active');
         roundResult.classList.remove('game-over', 'game-over-win', 'game-over-loss', 'game-over-tie');
         playButton.hidden = true;
         showPlaceholder(playerState);
