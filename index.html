@@ -8,6 +8,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="preload" href="assets/rock.png" as="image">
+    <link rel="preload" href="assets/paper.png" as="image">
+    <link rel="preload" href="assets/scissors.png" as="image">
     <title>Rock Paper Scissors</title>
 </head>
 
@@ -51,6 +54,9 @@
                     <h2 class="fighter-label">Your move</h2>
                     <div id="player-choice" class="fighter-display player-choice-display" aria-live="polite">
                         <span class="fighter-placeholder">?</span>
+                        <img class="choice-image" data-choice="rock" src="assets/rock.png" alt="Rock" width="110" height="110" hidden>
+                        <img class="choice-image" data-choice="paper" src="assets/paper.png" alt="Paper" width="110" height="110" hidden>
+                        <img class="choice-image" data-choice="scissors" src="assets/scissors.png" alt="Scissors" width="110" height="110" hidden>
                     </div>
                 </article>
 
@@ -60,6 +66,9 @@
                     <h2 class="fighter-label">Computer</h2>
                     <div id="computer-choice" class="fighter-display computer-choice-display" aria-live="polite">
                         <span class="fighter-placeholder">?</span>
+                        <img class="choice-image" data-choice="rock" src="assets/rock.png" alt="Rock" width="110" height="110" hidden>
+                        <img class="choice-image" data-choice="paper" src="assets/paper.png" alt="Paper" width="110" height="110" hidden>
+                        <img class="choice-image" data-choice="scissors" src="assets/scissors.png" alt="Scissors" width="110" height="110" hidden>
                     </div>
                 </article>
             </div>

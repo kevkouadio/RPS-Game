@@ -1,18 +1,11 @@
 const TOTAL_ROUNDS = 10;
 const CHOICES = ['rock', 'paper', 'scissors'];
-const CHOICE_IMAGES = {
-    rock: 'assets/rock.png',
-    paper: 'assets/paper.png',
-    scissors: 'assets/scissors.png',
-};
 
 const beats = {
     rock: 'scissors',
     paper: 'rock',
     scissors: 'paper',
 };
-
-const capitalize = (value) => value.charAt(0).toUpperCase() + value.slice(1);
 
 const game = () => {
     let playerScore = 0;
@@ -33,29 +26,56 @@ const game = () => {
     const reloadButton = document.querySelector('.reload');
     const choiceButtons = Array.from(document.querySelectorAll('.choice-btn'));
 
+    const setupDisplay = (container) => {
+        const placeholder = container.querySelector('.fighter-placeholder');
+        const images = Object.fromEntries(
+            CHOICES.map((choice) => [
+                choice,
+                container.querySelector(`[data-choice="${choice}"]`),
+            ])
+        );
+
+        return { container, placeholder, images };
+    };
+
+    const computerState = setupDisplay(computerDisplay);
+    const playerState = setupDisplay(playerDisplay);
+
+    const setDisplayChoice = (state, choice, { shuffling = false, revealed = false } = {}) => {
+        const { container, placeholder, images } = state;
+
+        placeholder.hidden = Boolean(choice);
+        CHOICES.forEach((name) => {
+            images[name].hidden = name !== choice;
+        });
+
+        container.classList.toggle('is-shuffling', shuffling);
+        container.classList.toggle('is-revealed', revealed);
+    };
+
+    const showPlaceholder = (state) => {
+        setDisplayChoice(state, null);
+    };
+
     const stopAnimation = () => {
         if (intervalHandle !== null) {
             clearInterval(intervalHandle);
             intervalHandle = null;
         }
-    };
-
-    const renderChoice = (element, choice) => {
-        element.innerHTML = `<img src="${CHOICE_IMAGES[choice]}" alt="${capitalize(choice)}">`;
-    };
-
-    const showPlaceholder = (element) => {
-        element.innerHTML = '<span class="fighter-placeholder">?</span>';
+        computerState.container.classList.remove('is-shuffling');
     };
 
     const animateComputerChoice = () => {
-        renderChoice(computerDisplay, CHOICES[animationIndex % CHOICES.length]);
+        const choice = CHOICES[animationIndex % CHOICES.length];
+        setDisplayChoice(computerState, choice, { shuffling: true });
         animationIndex += 1;
     };
 
     const startAnimation = () => {
         stopAnimation();
-        intervalHandle = setInterval(animateComputerChoice, 150);
+        computerState.container.classList.add('is-shuffling');
+        animateComputerChoice();
+        intervalHandle = setInterval(animateComputerChoice, 180);
     };
 
     const setChoicesEnabled = (enabled) => {
@@ -111,8 +131,8 @@ const game = () => {
         const computerChoice = CHOICES[Math.floor(Math.random() * CHOICES.length)];
 
         stopAnimation();
-        renderChoice(computerDisplay, computerChoice);
-        renderChoice(playerDisplay, playerChoice);
+        setDisplayChoice(computerState, computerChoice, { revealed: true });
+        setDisplayChoice(playerState, playerChoice, { revealed: true });
 
         choiceButtons.forEach((btn) => btn.classList.toggle('is-selected', btn === button));
         showRoundResult(getRoundOutcome(playerChoice, computerChoice));
@@ -161,7 +181,9 @@ const game = () => {
         roundResult.hidden = true;
         roundResult.classList.remove('game-over', 'game-over-win', 'game-over-loss', 'game-over-tie');
         playButton.hidden = true;
-        showPlaceholder(playerDisplay);
+        showPlaceholder(playerState);
+        playerState.container.classList.remove('is-revealed');
+        computerState.container.classList.remove('is-revealed');
         setChoicesEnabled(true);
         startAnimation();
     });
