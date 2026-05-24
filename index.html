@@ -2,69 +2,94 @@
 <html lang="en">
 
 <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <title>RPS-Game</title>
+    <title>Rock Paper Scissors</title>
 </head>
 
 <body>
-    <nav class="navbar navbar-dark bg-dark">
-        <span class="text-white h1 mx-auto navbar-text">
-            <span style="color:rgb(219, 109, 145)">Rock</span> -
-            <span style="color: rgb(73, 172, 205);">Paper</span> -
-            <span style="color:rgb(255, 255, 11)">Scissors</span>
-        </span>
-    </nav>
-    <div class="container">
-        <br> <br>
-        <div class="score card text-center">
-            <div class="card-header">
-                <h3>Score</h3>
-            </div>
-            <div class="row">
-                <div class="col container">
-                    <h2>Player</h2>
-                    <h2 class="p-count count">0</h2>
-                </div>
-                <div class="col container">
-                    <h2>Computer</h2>
-                    <h2 class="c-count count">0</h2>
-                </div>
-            </div>
-            <h5 class="movesleft">Rounds Left: 10 </h5>
-        </div>
-        <div class="playset">
-            <div class="comp-display">
-                <p class="computer-choice">Computer's Choice:</p>
-                <span id="result"></span>
-            </div>
-            <!--Final result of game -->
-            <div class="result"></div>
+    <header class="game-header">
+        <h1 class="game-title">
+            <span class="title-rock">Rock</span>
+            <span class="title-sep" aria-hidden="true">·</span>
+            <span class="title-paper">Paper</span>
+            <span class="title-sep" aria-hidden="true">·</span>
+            <span class="title-scissors">Scissors</span>
+        </h1>
+        <p class="game-subtitle">First to win the most rounds in 10 plays</p>
+    </header>
 
-            <!--Options available to player to play game -->
-            <button type="button" class="play btn btn-primary">Click to Play next round</button>
-
-            <!-- <p class="player-choice">You Chose: <span id="p-choice"></span></p> -->
-            <br> <br>
-            <div class="move">Click on an image to choose</div>
-            <div class="options">
-                <button class="rock btn" value="rock"><img class="img-select" src="assets/rock.png"
-                        width="200px"></button>
-                <button class="paper btn" value="paper"><img class="img-select" src="assets/paper.png"
-                        width="200px"></button>
-                <button class="scissor btn" value="scissors"><img class="img-select" src="assets/scissors.png"
-                        width="200px"></button>
+    <main class="game-container">
+        <section class="scoreboard" aria-label="Scoreboard">
+            <div class="scoreboard-grid">
+                <article class="score-card score-card--player">
+                    <p class="score-label">You</p>
+                    <p class="p-count score-value" aria-live="polite">0</p>
+                </article>
+                <article class="score-card score-card--computer">
+                    <p class="score-label">Computer</p>
+                    <p class="c-count score-value" aria-live="polite">0</p>
+                </article>
             </div>
-            <br> <br>
-        </div>
-        <!--Reload the game -->
-        <button class="reload btn btn-success" style="display: none;"></button>
-    </div>
+            <div class="rounds-track">
+                <div class="rounds-meta">
+                    <span class="movesleft" aria-live="polite">Round 0 of 10</span>
+                </div>
+                <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="arena" aria-label="Game board">
+            <div class="versus comp-display">
+                <article class="fighter fighter--player">
+                    <h2 class="fighter-label">Your move</h2>
+                    <div id="player-choice" class="fighter-display player-choice-display" aria-live="polite">
+                        <span class="fighter-placeholder">?</span>
+                    </div>
+                </article>
+
+                <div class="vs-badge" aria-hidden="true">VS</div>
+
+                <article class="fighter fighter--computer">
+                    <h2 class="fighter-label">Computer</h2>
+                    <div id="computer-choice" class="fighter-display computer-choice-display" aria-live="polite">
+                        <span class="fighter-placeholder">?</span>
+                    </div>
+                </article>
+            </div>
+
+            <div class="round-result" hidden aria-live="polite"></div>
+
+            <button type="button" class="play btn-action" hidden>Play next round</button>
+        </section>
+
+        <section class="choices-panel" aria-label="Choose your move">
+            <p class="move">Pick rock, paper, or scissors</p>
+            <div class="options" role="group" aria-label="Choose rock, paper, or scissors">
+                <button type="button" class="choice-btn" value="rock" aria-label="Rock">
+                    <img src="assets/rock.png" alt="">
+                    <span>Rock</span>
+                </button>
+                <button type="button" class="choice-btn" value="paper" aria-label="Paper">
+                    <img src="assets/paper.png" alt="">
+                    <span>Paper</span>
+                </button>
+                <button type="button" class="choice-btn" value="scissors" aria-label="Scissors">
+                    <img src="assets/scissors.png" alt="">
+                    <span>Scissors</span>
+                </button>
+            </div>
+        </section>
+
+        <button type="button" class="reload btn-action btn-action--success" hidden>Play again</button>
+    </main>
+
     <script src="scripts.js"></script>
 </body>
 

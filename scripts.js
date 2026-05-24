@@ -1,174 +1,173 @@
+const TOTAL_ROUNDS = 10;
+const CHOICES = ['rock', 'paper', 'scissors'];
+const CHOICE_IMAGES = {
+    rock: 'assets/rock.png',
+    paper: 'assets/paper.png',
+    scissors: 'assets/scissors.png',
+};
+
+const beats = {
+    rock: 'scissors',
+    paper: 'rock',
+    scissors: 'paper',
+};
+
+const capitalize = (value) => value.charAt(0).toUpperCase() + value.slice(1);
+
 const game = () => {
     let playerScore = 0;
     let computerScore = 0;
     let moves = 0;
-    
-    var counter = 0;
-    var computerObtions = ["assets/rock.png", "assets/paper.png", "assets/scissors.png"];
-    var intervalHandle = null;
-    var computerChoice;
+    let animationIndex = 0;
+    let intervalHandle = null;
 
-    function getRandomImage() {
-        document.getElementById("result").innerHTML = '<img src="' + computerObtions[counter % computerObtions.length] + '" width="200px"/>';
-        counter += 1;
+    const computerDisplay = document.getElementById('computer-choice');
+    const playerDisplay = document.getElementById('player-choice');
+    const roundResult = document.querySelector('.round-result');
+    const playerScoreBoard = document.querySelector('.p-count');
+    const computerScoreBoard = document.querySelector('.c-count');
+    const movesLeft = document.querySelector('.movesleft');
+    const progressBar = document.querySelector('.progress-bar');
+    const progressFill = document.querySelector('.progress-fill');
+    const playButton = document.querySelector('.play');
+    const reloadButton = document.querySelector('.reload');
+    const choiceButtons = Array.from(document.querySelectorAll('.choice-btn'));
 
-    }
+    const stopAnimation = () => {
+        if (intervalHandle !== null) {
+            clearInterval(intervalHandle);
+            intervalHandle = null;
+        }
+    };
 
-    intervalHandle = setInterval(() => {
-        getRandomImage()
-    }, 150);
+    const renderChoice = (element, choice) => {
+        element.innerHTML = `<img src="${CHOICE_IMAGES[choice]}" alt="${capitalize(choice)}">`;
+    };
 
-    const playGame = () => {
-        const rockBtn = document.querySelector('.rock');
-        const paperBtn = document.querySelector('.paper');
-        const scissorBtn = document.querySelector('.scissor');
-        const playerOptions = [rockBtn, paperBtn, scissorBtn];
-        const play = document.querySelector(".play");
-        play.style.display = 'none';
-        const result = document.querySelector('.result');
+    const showPlaceholder = (element) => {
+        element.innerHTML = '<span class="fighter-placeholder">?</span>';
+    };
 
-        
-        playerOptions.forEach(option => {
+    const animateComputerChoice = () => {
+        renderChoice(computerDisplay, CHOICES[animationIndex % CHOICES.length]);
+        animationIndex += 1;
+    };
 
-            option.addEventListener('click', function () {
-                
-                const movesLeft = document.querySelector('.movesleft');
-                moves++;
-                movesLeft.innerText = `Rounds Left: ${10 - moves}`;
+    const startAnimation = () => {
+        stopAnimation();
+        intervalHandle = setInterval(animateComputerChoice, 150);
+    };
 
-                var number = Math.floor(Math.random() * 3);
+    const setChoicesEnabled = (enabled) => {
+        choiceButtons.forEach((button) => {
+            button.disabled = !enabled;
+            button.classList.toggle('is-selected', false);
+        });
+    };
 
-                document.getElementById("result").innerHTML = '<img src="' + computerObtions[number] + '" width="200px"/>';
+    const updateProgress = () => {
+        const percent = (moves / TOTAL_ROUNDS) * 100;
+        movesLeft.textContent = `Round ${moves} of ${TOTAL_ROUNDS}`;
+        progressFill.style.width = `${percent}%`;
+        progressBar.setAttribute('aria-valuenow', String(moves));
+    };
 
-                
-                if (number == 0) {
-                    computerChoice = "rock";
-                } else if (number == 1) {
-                    computerChoice = "paper";
-                }
-                else {
-                    computerChoice = "scissors";
-                }
-
-                playerOptions.forEach(option => {
-                    option.disabled = true;
-                    clearInterval(intervalHandle);
-                    play.style.display = 'block'
-                    result.style.display = 'block'
-                })
-
-                winner(this.value, computerChoice)
-
-                if (moves == 10) {
-                    gameOver(playerOptions, movesLeft);
-                }
-            })
-        })
- 
-        play.addEventListener('click', function () {
-                    
-            playerOptions.forEach(option => {
-                option.disabled = false;
-                result.style.display = 'none';
-            })
-            intervalHandle = setInterval(() => {
-                getRandomImage()
-            }, 150); 
-            play.style.display = 'none';
-            
-        })
-    }
-
-
-    const winner = (player, computer) => {
-        const result = document.querySelector('.result');
-        const playerScoreBoard = document.querySelector('.p-count');
-        const computerScoreBoard = document.querySelector('.c-count');
-        player = player.toLowerCase();
-        computer = computer.toLowerCase();
+    const getRoundOutcome = (player, computer) => {
         if (player === computer) {
-            result.innerHTML = '<h2 style="color:grey">It is a Tie</h2>'
+            return 'tie';
         }
-        else if (player == 'rock') {
-            if (computer == 'paper') {
-                result.innerHTML = '<h2 style="color:red">Computer Won</h2>';
-                computerScore++;
-                computerScoreBoard.textContent = computerScore
+        return beats[player] === computer ? 'win' : 'loss';
+    };
 
-            } else {
-                result.innerHTML = '<h2 style="color:green">You Won</h2>'
-                playerScore++;
-                playerScoreBoard.textContent = playerScore
-            }
+    const showRoundResult = (outcome) => {
+        roundResult.hidden = false;
+        roundResult.classList.remove('game-over', 'game-over-win', 'game-over-loss', 'game-over-tie');
+
+        if (outcome === 'tie') {
+            roundResult.innerHTML = '<h2 class="result-tie">Tie round</h2>';
+            return;
         }
-        else if (player == 'scissors') {
-            if (computer == 'rock') {
-                result.innerHTML = '<h2 style="color:red">Computer Won</h2>';
-                computerScore++;
-                computerScoreBoard.textContent = computerScore;
-            } else {
-                result.innerHTML = '<h2 style="color:green">You Won</h2>';
-                playerScore++;
-                playerScoreBoard.textContent = playerScore
-            }
+
+        if (outcome === 'win') {
+            roundResult.innerHTML = '<h2 class="result-win">You won this round</h2>';
+            playerScore += 1;
+            playerScoreBoard.textContent = playerScore;
+            return;
         }
-        else if (player == 'paper') {
-            if (computer == 'scissors') {
-                result.innerHTML = '<h2 style="color:red">Computer Won</h2>';
-                computerScore++;
-                computerScoreBoard.textContent = computerScore
-            } else {
-                result.innerHTML = '<h2 style="color:green">You Won</h2>';
-                playerScore++;
-                playerScoreBoard.textContent = playerScore
-            }
+
+        roundResult.innerHTML = '<h2 class="result-loss">Computer won this round</h2>';
+        computerScore += 1;
+        computerScoreBoard.textContent = computerScore;
+    };
+
+    const handleChoice = (playerChoice, button) => {
+        if (moves >= TOTAL_ROUNDS) {
+            return;
         }
-    }
 
+        moves += 1;
+        updateProgress();
 
-    const gameOver = (playerOptions, movesLeft) => {
+        const computerChoice = CHOICES[Math.floor(Math.random() * CHOICES.length)];
 
-        const chooseMove = document.querySelector('.move');
-        const result = document.querySelector('.result');
-        const reloadBtn = document.querySelector('.reload');
-        const play = document.querySelector(".play");
-        const compDispaly = document.querySelector('.comp-display')
+        stopAnimation();
+        renderChoice(computerDisplay, computerChoice);
+        renderChoice(playerDisplay, playerChoice);
 
-        playerOptions.forEach(option => {
-            option.style.display = 'none';
-            chooseMove.style.display = 'none';
-            compDispaly.style.display = 'none'; 
-        })
+        choiceButtons.forEach((btn) => btn.classList.toggle('is-selected', btn === button));
+        showRoundResult(getRoundOutcome(playerChoice, computerChoice));
 
-       play.style.display = "none";
+        setChoicesEnabled(false);
+        playButton.hidden = false;
 
-        movesLeft.style.display = 'none';
+        if (moves === TOTAL_ROUNDS) {
+            endGame();
+        }
+    };
+
+    const endGame = () => {
+        stopAnimation();
+        setChoicesEnabled(false);
+        playButton.hidden = true;
+
+        document.querySelector('.move').hidden = true;
+        document.querySelector('.versus').hidden = true;
+        document.querySelector('.choices-panel').hidden = true;
+        document.querySelector('.rounds-track').hidden = true;
+
+        roundResult.hidden = false;
+        roundResult.classList.add('game-over');
 
         if (playerScore > computerScore) {
-            result.style.fontSize = '2rem';
-            result.innerHTML = 'Game Over!!! <br> You Won The Game! 👍'
-            result.style.color = '#308D46';
+            roundResult.innerHTML = 'Game over<br><strong>You win!</strong>';
+            roundResult.classList.add('game-over-win');
+        } else if (playerScore < computerScore) {
+            roundResult.innerHTML = 'Game over<br><strong>Computer wins</strong>';
+            roundResult.classList.add('game-over-loss');
+        } else {
+            roundResult.innerHTML = 'Game over<br><strong>It\'s a draw</strong>';
+            roundResult.classList.add('game-over-tie');
         }
-        else if (playerScore < computerScore) {
-            result.style.fontSize = '2rem';
-            result.innerHTML = 'Game Over!!! <br> You Lost The Game! 😞';
-            result.style.color = 'red';
-        }
-        else {
-            result.style.fontSize = '2rem';
-            result.innerText = 'Draw 🤝';
-            result.style.color = 'grey'
-        }
-        reloadBtn.innerText = 'Restart Game';
-        reloadBtn.style.display = 'flex'
-        reloadBtn.addEventListener('click', () => {
-            window.location.reload();
-        })
-    }
-    playGame();
 
-}
+        reloadButton.hidden = false;
+        reloadButton.addEventListener('click', () => window.location.reload(), { once: true });
+    };
+
+    choiceButtons.forEach((button) => {
+        button.addEventListener('click', () => handleChoice(button.value, button));
+    });
+
+    playButton.addEventListener('click', () => {
+        roundResult.hidden = true;
+        roundResult.classList.remove('game-over', 'game-over-win', 'game-over-loss', 'game-over-tie');
+        playButton.hidden = true;
+        showPlaceholder(playerDisplay);
+        setChoicesEnabled(true);
+        startAnimation();
+    });
+
+    updateProgress();
+    startAnimation();
+};
 
 game();
-
-
